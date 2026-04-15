@@ -10,7 +10,12 @@ Features:
 
 1. Copy `settings.json` to `~/.claude/settings.json`
 2. Download SMW sounds to `~/.claude/sounds/` (or `scp` from another machine)
-3. Replace the audio player command based on your platform:
+3. (WSL only) Copy `flash-vscode.sh` to `~/.claude/flash-vscode.sh` and make it executable:
+   ```bash
+   cp flash-vscode.sh ~/.claude/flash-vscode.sh && chmod +x ~/.claude/flash-vscode.sh
+   ```
+   On macOS, remove the `bash ~/.claude/flash-vscode.sh` lines from `Stop` and `PermissionRequest` in `settings.json`.
+4. Replace the audio player command based on your platform:
 
 | Platform        | Player          | Command                                  |
 | --------------- | --------------- | ---------------------------------------- |
@@ -41,9 +46,4 @@ sudo apt install -y pulseaudio-utils sound-theme-freedesktop
 
 `flash-vscode.sh` flashes the correct VS Code window when CC finishes or needs permission. Works across multiple VS Code windows — identifies the right one by workspace name (git root basename → partial window title match).
 
-**Setup:**
-1. Copy `flash-vscode.sh` to `~/.claude/flash-vscode.sh` and `chmod +x` it
-2. The `Stop` and `PermissionRequest` hooks in `settings.json` already call it
-3. WSL only — calls `powershell.exe` to invoke Win32 `FlashWindow`
-
-On macOS, remove the flash hook lines — `afplay` sounds are sufficient.
+WSL only — calls `powershell.exe` to invoke Win32 `FlashWindow` + `EnumWindows` to identify the right window by workspace name. See setup step 3 above.
