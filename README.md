@@ -2,6 +2,10 @@
 
 Template for `~/.claude/settings.json` with sound hooks and permissions.
 
+Features:
+- **SMW sound effects** — each Claude Code event plays a distinct Super Mario World sound
+- **VS Code window flash** (WSL) — flashes the right VS Code window when CC finishes or needs permission, useful when running multiple CC sessions side by side
+
 ## Setup
 
 1. Copy `settings.json` to `~/.claude/settings.json`
@@ -31,3 +35,15 @@ sudo apt install -y pulseaudio-utils sound-theme-freedesktop
 | SubagentStart      | vine             | Subagent spawned            |
 | SubagentStop       | switch activated | Subagent finished           |
 | InstructionsLoaded | pipe             | CLAUDE.md loaded            |
+| PermissionRequest  | spin jump        | Claude needs permission     |
+
+## VS Code window flash (WSL only)
+
+`flash-vscode.sh` flashes the correct VS Code window when CC finishes or needs permission. Works across multiple VS Code windows — identifies the right one by workspace name (git root basename → partial window title match).
+
+**Setup:**
+1. Copy `flash-vscode.sh` to `~/.claude/flash-vscode.sh` and `chmod +x` it
+2. The `Stop` and `PermissionRequest` hooks in `settings.json` already call it
+3. WSL only — calls `powershell.exe` to invoke Win32 `FlashWindow`
+
+On macOS, remove the flash hook lines — `afplay` sounds are sufficient.
