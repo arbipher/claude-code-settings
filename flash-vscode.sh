@@ -5,7 +5,7 @@
 
 WORKSPACE=$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")
 
-powershell.exe -c "
+/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -c "
 Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
@@ -16,19 +16,19 @@ public class WinHelper {
     [DllImport(\"user32.dll\")] public static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
     [DllImport(\"user32.dll\")] public static extern bool IsWindowVisible(IntPtr h);
     [DllImport(\"user32.dll\")] public static extern bool FlashWindow(IntPtr h, bool b);
-    public static IntPtr Find(string partial) {
+    public static IntPtr Find(string workspace) {
         IntPtr found = IntPtr.Zero;
         EnumWindows((h, l) => {
-            if (!IsWindowVisible(h)) return true;
             var sb = new StringBuilder(256);
             GetWindowText(h, sb, 256);
-            if (sb.ToString().Contains(partial)) { found = h; return false; }
+            string title = sb.ToString();
+            if (title.Contains(workspace) && title.EndsWith(\"Visual Studio Code\")) { found = h; return false; }
             return true;
         }, IntPtr.Zero);
         return found;
     }
 }
 '@
-\$hwnd = [WinHelper]::Find('$WORKSPACE - ')
+\$hwnd = [WinHelper]::Find('$WORKSPACE')
 if (\$hwnd -ne [IntPtr]::Zero) { [WinHelper]::FlashWindow(\$hwnd, \$true) }
 " &
